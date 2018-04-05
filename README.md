@@ -21,6 +21,8 @@ $ pip install ssmc
 ### Usage
 
 ```python
+import ssmc
+
 api = ssmc.APIClient(token=_token_, secret=_secret_, zone="is1b")
 # List MGWs
 mgws, _ = api.list_mgws()

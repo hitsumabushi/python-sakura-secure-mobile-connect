@@ -17,3 +17,8 @@ venv
 .python-version
 .coverage
 .pytest_cache/
+
+# build
+build/
+dist/
+*.egg-info

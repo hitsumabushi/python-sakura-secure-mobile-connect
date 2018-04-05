@@ -109,7 +109,7 @@ class MGW:
 class PagingInfo:
     """
     ページングされた情報をハンドルするための共通クラスです。
-    あるAPIについて、ページングされた内容をすべて取得したい場合には以下のようにして、PagingInfoをチェックすることで可能です。
+    あるAPIについて、ページングされた内容をすべて取得したい場合には以下のようにして、PagingInfoをチェックすることで可能です。::
 
         while True:
             _, paging = api.some_request(size=size, offset=offset)
@@ -117,10 +117,16 @@ class PagingInfo:
             offset = paging.size + paging.offset
             if offset >= total:
                 break
-
     """
 
     def __init__(self, total=None, size=None, offset=None):
+        """
+        ページング情報
+
+        :param total: 全体の件数
+        :param size: 今取得している件数
+        :param offset: オフセット
+        """
         self.total = total
         self.size = size
         self.offset = offset
@@ -140,6 +146,8 @@ class APIClient:
                  base_url="https://secure.sakura.ad.jp/cloud",
                  common_service_item_master_zone="is1a"):
         """
+        APIクライアント
+
         :param token: APIキー
         :param secret: APIシークレットキー
         :param zone: MGWが存在するゾーン
@@ -180,7 +188,14 @@ class APIClient:
         return r
 
     def list_mgws(self, filter=MGW._filter, size=default_size, offset=0) -> (List[MGW], PagingInfo):
-        """MGWの一覧を取得する"""
+        """
+        MGWの一覧を取得する
+
+        :param filter: フィルター条件の指定
+        :param size: 取得件数
+        :param offset: オフセット
+        :return: MGWのリスト, ページング情報
+        """
         logger.debug("list mgws")
         path = "appliance"
         filter["Count"] = size
@@ -200,7 +215,14 @@ class APIClient:
         return result, paging
 
     def list_sims(self, filter=SIM._filter, size=default_size, offset=0) -> (List[SIM], PagingInfo):
-        """登録済みのSIM一覧を取得する"""
+        """
+        登録済みのSIM一覧を取得する
+
+        :param filter: フィルター条件の指定
+        :param size: 取得件数
+        :param offset: オフセット
+        :return: SIMのリスト, ページング情報
+        """
         logger.debug("list sims of ID")
         path = "commonserviceitem"
         item_key = "CommonServiceItems"
@@ -224,14 +246,30 @@ class APIClient:
 
     def search_sims_by_name(self, name: str, filter=SIM._filter,
                             size=default_size, offset=0) -> (List[SIM], PagingInfo):
-        """SIMを名前で部分一致で検索する"""
+        """
+        SIMを名前で部分一致で検索する
+
+        :param name: 中間一致で検索したい名前の文字列
+        :param filter: フィルター条件の指定
+        :param size: 取得件数
+        :param offset: オフセット
+        :return: SIMのリスト, ページング情報
+        """
         logger.debug(f"search sims by name: {name}")
         filter["Filter"]["Name"] = name
         return self.list_sims(filter=filter, size=size, offset=offset)
 
     def get_sim_by_name(self, name: str, filter=SIM._filter,
                         size=default_size, offset=0) -> Optional[SIM]:
-        """SIMを名前で完全一致で検索する"""
+        """
+        SIMを名前で完全一致で検索する"
+
+        :param name: 取得するSIMの名前
+        :param filter: フィルター条件の指定
+        :param size: 取得件数
+        :param offset: オフセット
+        :return: SIM or None
+        """
         logger.debug(f"get sim by name: {name}")
         filter["Filter"]["Name"] = name
         while True:
@@ -246,7 +284,15 @@ class APIClient:
 
     def list_sim_statuses_of_mgw(self, mgw_id: str, filter=SIMStatus._filter, size=default_size, offset=0) \
             -> (List[SIMStatus], PagingInfo):
-        """指定されたMGWにアサインされているSIMのステータス一覧を取得する"""
+        """
+        指定されたMGWにアサインされているSIMのステータス一覧を取得する
+
+        :param mgw_id: MGW のID
+        :param filter: フィルター条件の指定
+        :param size: 取得件数
+        :param offset: オフセット
+        :return: SIMのリスト, ページング情報
+        """
         logger.debug("list sim status: %s", mgw_id)
         path = f"appliance/{mgw_id}/mobilegateway/sims"
 
@@ -270,7 +316,12 @@ class APIClient:
     list_sims_of_mgw = list_sim_statuses_of_mgw
 
     def get_sim_status(self, sim_id: str) -> SIMStatus:
-        """指定されたSIMのステータスを取得する"""
+        """
+        指定されたSIMのステータスを取得する
+
+        :param sim_id: SIMのID
+        :return: SIMStatus
+        """
         logger.debug("get sim status: %s", sim_id)
         path = "commonserviceitem/%s/sim/status" % sim_id
         r = self._request(method="get", path=path)
@@ -284,6 +335,7 @@ class APIClient:
                    tags: Iterable[str] = None) -> SIM:
         """
         SIMを登録する
+
         :param iccid: ICCID
         :param passcode: 登録用パスコード
         :param name: 名前(セキュアモバイルコネクトでは、ICCIDで検索できないため、名前をICCIDにすることを強く推奨する)
@@ -317,21 +369,36 @@ class APIClient:
             raise RuntimeError("Invalid response from cloud api.")
 
     def delete_sim(self, sim_id: str):
-        """指定されたSIMを登録解除する"""
+        """
+        指定されたSIMを登録解除する
+
+        :param sim_id: SIMのID
+        :return:
+        """
         logger.debug("delete sim: resource id=%s", sim_id)
         path = "commonserviceitem/" + sim_id
         _ = self._request(method="delete", path=path)
         return sim_id
 
     def activate_sim(self, sim_id: str):
-        """SIMを有効化する"""
+        """
+        SIMを有効化する
+
+        :param sim_id: SIMのID
+        :return:
+        """
         logger.debug("activate sim: resource id=%s", sim_id)
         path = "commonserviceitem/" + sim_id + "/sim/activate"
         _ = self._request(method="put", path=path)
         return sim_id
 
     def deactivate_sim(self, sim_id: str):
-        """SIMを無効化する"""
+        """
+        SIMを無効化する
+
+        :param sim_id: SIMのID
+        :return:
+        """
         logger.debug("deactivate sim: resource id=%s", sim_id)
         path = "commonserviceitem/" + sim_id + "/sim/deactivate"
         _ = self._request(method="put", path=path)
@@ -389,9 +456,14 @@ class APIClient:
         _ = self._request(method="delete", path=path)
 
     def set_ip(self, sim_id: str, ip: str):
-        """SIMに割り当てられるIPを設定する
+        """
+        SIMに割り当てられるIPを設定する
 
         * このメソッドを呼ぶためには、SIMはMGWにアサインされている必要がある
+
+        :param sim_id: SIMのID
+        :param ip: 割り当てるIPアドレス
+        :return:
         """
         logger.debug("set ip: sim=%s, ip=%s", sim_id, ip)
         path = "commonserviceitem/%s/sim/ip" % sim_id
@@ -399,9 +471,13 @@ class APIClient:
         _ = self._request(method="put", path=path, data=json.dumps(payload))
 
     def delete_ip(self, sim_id: str):
-        """SIMに割り当てられるIPの設定を解除する
+        """
+        SIMに割り当てられるIPの設定を解除する
 
         * このメソッドを呼ぶためには、SIMはMGWにアサインされている必要がある
+
+        :param sim_id: SIMのID
+        :return:
         """
         logger.debug("delete ip: sim=%s", sim_id)
         path = "commonserviceitem/%s/sim/ip" % sim_id

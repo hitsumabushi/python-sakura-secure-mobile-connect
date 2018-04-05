@@ -7,6 +7,8 @@
 
 SIMの登録、有効化、無効化、登録解除などができます。
 
+* [ドキュメント](https://hitsumabushi.github.io/python-sakura-secure-mobile-connect/index.html)
+
 ## TODO
 
 * [x] Register SIM

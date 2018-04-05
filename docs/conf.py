@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../src/')
 
 # -- Project information -----------------------------------------------------
 
-project = 'src'
+project = 'ssmc'
 copyright = '2018, hitsumabushi'
 author = 'hitsumabushi'
 
@@ -61,7 +61,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'en'
+language = 'ja'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

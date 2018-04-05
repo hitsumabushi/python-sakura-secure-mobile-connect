@@ -1,0 +1,19 @@
+.*.swp
+*~
+.*~
+# IntelliJ
+.idea
+*.iml
+
+# log
+log
+*.log
+
+# python
+__pycache__/
+*.pyc
+
+venv
+.python-version
+.coverage
+.pytest_cache/

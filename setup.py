@@ -8,7 +8,7 @@ from os import path
 from pip.req import parse_requirements
 import pip
 # Always prefer setuptools over distutils
-from setuptools import setup
+from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
 
@@ -106,8 +106,9 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    py_modules=["ssmc"],
+    # py_modules=["ssmc"],
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
+    packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
 
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is

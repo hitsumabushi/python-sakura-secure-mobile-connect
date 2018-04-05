@@ -3,7 +3,7 @@
 ## What is this
 
 このツールは、 [さくらのクラウド](https://cloud.sakura.ad.jp/) のAPIを利用して、
-[セキュアモバイルコネクト](https://www.sakura.ad.jp/services/sim/) のSIMを管理するためのPythonhonツールです。
+[セキュアモバイルコネクト](https://www.sakura.ad.jp/services/sim/) のSIMを管理するためのPythonツールです。
 
 SIMの登録、有効化、無効化、登録解除などができます。
 

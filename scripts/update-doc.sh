@@ -16,7 +16,7 @@ git checkout -b gh-pages
 
 # copy output to top of repository
 mkdir .keep/
-cp -r _build/html/* .keep/
+cp -r build/html/* .keep/
 
 # Remove unpublish files
 rm -rf *

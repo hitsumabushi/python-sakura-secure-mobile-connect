@@ -1,4 +1,4 @@
-# Python tool for Secure Mobile Connect
+# Python tool for SAKURA Secure Mobile Connect
 
 ## What is this
 
@@ -7,23 +7,25 @@
 
 SIMの登録、有効化、無効化、登録解除などができます。
 
+## How To use
+
 * [ドキュメント](https://hitsumabushi.github.io/python-sakura-secure-mobile-connect/index.html)
+* [PyPI](https://pypi.org/project/ssmc/)
 
-## TODO
+### Install
 
-* [x] Register SIM
-* [x] Change SIM Status (Enable / Disable)
-* [x] Assign SIM to specific MGW
-  * Set IMEI
-* [x] Search SIM by ICCID
-* [x] Get Traffic of all SIM
-* [x] Tuning paging size default
-* [ ] Handle conflict error on PUT request
-  * 例えばenabledにする場合に、すでに enabled だとエラーが返ってくるので、いい感じにハンドリングしたい
+```
+$ pip install ssmc
+```
 
-### **Not** TODO
+### Usage
 
-* Create MGW
+```python
+api = ssmc.APIClient(token=_token_, secret=_secret_, zone="is1b")
+# List MGWs
+mgws, _ = api.list_mgws()
+print(mgws)
+```
 
 # 開発者向けメモ
 

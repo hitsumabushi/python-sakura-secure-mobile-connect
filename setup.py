@@ -108,7 +108,7 @@ setup(
     #
     # py_modules=["ssmc"],
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
+    packages=['src'],
 
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is

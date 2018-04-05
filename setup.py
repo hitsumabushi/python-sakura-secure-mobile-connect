@@ -20,7 +20,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 # parse_requirements
 reqs = [str(ir.req) for ir in parse_requirements(
-    path.join(here, 'requirements.txt'),  session=pip.download.PipSession())]
+    path.join(here, 'requirements.txt'), session=pip.download.PipSession())]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -37,7 +37,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.4',  # Required
+    version='1.0.5',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -80,7 +80,6 @@ setup(
         #   5 - Production/Stable
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
-        #'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: Apache Software License',
 
         # Specify the Python versions you support here. In particular, ensure
@@ -110,10 +109,10 @@ setup(
     #
     # py_modules=["ssmc"],
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    #packages=['src'],
-    packages = find_packages('src'),  # Required
-    package_dir = {'': 'src'},
-    py_modules = [splitext(basename(path))[0] for path in glob('src/*.py')],
+    # packages=['src'],
+    packages=find_packages('src'),  # Required
+    package_dir={'': 'src'},
+    py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
 
 
     # This field lists other packages that your project depends on to run.
@@ -151,7 +150,7 @@ setup(
     #
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     # data_files=[('my_data', ['data/data_file'])],  # Optional
-    data_files = [
+    data_files=[
         ('', ['requirements-dev.txt']),
     ],
 
@@ -162,11 +161,11 @@ setup(
     #
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
-    #entry_points={  # Optional
-    #    'console_scripts': [
-    #        'sample=sample:main',
-    #    ],
-    #},
+    # entry_points={  # Optional
+    #     'console_scripts': [
+    #         'sample=sample:main',
+    #     ],
+    # },
 
     # List additional URLs that are relevant to your project as a dict.
     #
@@ -178,9 +177,9 @@ setup(
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
-       'Bug Reports': 'https://github.com/hitsumabushi/python-sakura-secure-mobile-connect/issues',
-       #'Funding': 'https://donate.pypi.org',
-       #'Say Thanks!': 'http://saythanks.io/to/example',
-       'Source': 'https://github.com/hitsumabushi/python-sakura-secure-mobile-connect',
+        'Bug Reports': 'https://github.com/hitsumabushi/python-sakura-secure-mobile-connect/issues',
+        # 'Funding': 'https://donate.pypi.org',
+        # 'Say Thanks!': 'http://saythanks.io/to/example',
+        'Source': 'https://github.com/hitsumabushi/python-sakura-secure-mobile-connect',
     },
 )

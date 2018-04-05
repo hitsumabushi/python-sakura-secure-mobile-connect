@@ -23,6 +23,7 @@ rm -rf *
 rm -f .gitignore
 
 mv .keep/* . && rm -rf .keep
+touch .nojekyll
 
 # Git push
 git add -A .

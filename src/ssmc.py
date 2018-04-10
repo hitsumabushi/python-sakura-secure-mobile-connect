@@ -179,6 +179,9 @@ class APIClient:
             logger.debug('request headers: %s', r.request.headers)
             logger.debug('request body: %s', r.request.body)
             logger.debug("response: %s" % r.text)
+        # PUT で 499 のときはなかったことにする
+        if (method == "put" or method == "delete") and r.status_code == 499:
+            return
         if r.status_code != requests.codes.ok:
             r.raise_for_status()
         status_success = r.json().get("Success", True)
@@ -400,8 +403,7 @@ class APIClient:
         """
         logger.debug("delete sim: resource id=%s", sim_id)
         path = "commonserviceitem/" + sim_id
-        _ = self._request(method="delete", path=path)
-        return sim_id
+        self._request(method="delete", path=path)
 
     def activate_sim(self, sim_id: str):
         """
@@ -412,8 +414,7 @@ class APIClient:
         """
         logger.debug("activate sim: resource id=%s", sim_id)
         path = "commonserviceitem/" + sim_id + "/sim/activate"
-        _ = self._request(method="put", path=path)
-        return sim_id
+        self._request(method="put", path=path)
 
     def deactivate_sim(self, sim_id: str):
         """
@@ -424,8 +425,7 @@ class APIClient:
         """
         logger.debug("deactivate sim: resource id=%s", sim_id)
         path = "commonserviceitem/" + sim_id + "/sim/deactivate"
-        _ = self._request(method="put", path=path)
-        return sim_id
+        self._request(method="put", path=path)
 
     def lock_imei(self, sim_id: str, imei: str):
         """
@@ -439,8 +439,7 @@ class APIClient:
         path = "commonserviceitem/%s/sim/imeilock" % sim_id
         payload = {"sim": {"imei": imei}}
         logger.debug("payload: %s", payload)
-        _ = self._request(method="put", path=path, data=json.dumps(payload))
-        return sim_id
+        self._request(method="put", path=path, data=json.dumps(payload))
 
     def unlock_imei(self, sim_id: str):
         """
@@ -452,8 +451,7 @@ class APIClient:
         """
         logger.debug("unlock imei: sim_id=%s" % (sim_id,))
         path = "commonserviceitem/%s/sim/imeilock" % sim_id
-        _ = self._request(method="delete", path=path)
-        return sim_id
+        self._request(method="delete", path=path)
 
     def assign_sim_to_mgw(self, mgw_id: str, sim_id: str):
         """
@@ -465,7 +463,7 @@ class APIClient:
         logger.debug("assign sim to mgw: sim=%s, mgw=%s", mgw_id, sim_id)
         path = "appliance/%s/mobilegateway/sims" % mgw_id
         payload = {"sim": {"resource_id": sim_id}}
-        _ = self._request(method="post", path=path, data=json.dumps(payload))
+        self._request(method="post", path=path, data=json.dumps(payload))
 
     def unassign_sim_from_mgw(self, mgw_id: str, sim_id: str):
         """
@@ -476,7 +474,7 @@ class APIClient:
         """
         logger.debug("unassign sim to mgw: sim=%s, mgw=%s", mgw_id, sim_id)
         path = "appliance/%s/mobilegateway/sims/%s" % (mgw_id, sim_id)
-        _ = self._request(method="delete", path=path)
+        self._request(method="delete", path=path)
 
     def set_ip(self, sim_id: str, ip: str):
         """
@@ -491,7 +489,7 @@ class APIClient:
         logger.debug("set ip: sim=%s, ip=%s", sim_id, ip)
         path = "commonserviceitem/%s/sim/ip" % sim_id
         payload = {"sim": {"ip": ip}}
-        _ = self._request(method="put", path=path, data=json.dumps(payload))
+        self._request(method="put", path=path, data=json.dumps(payload))
 
     def delete_ip(self, sim_id: str):
         """
@@ -504,4 +502,4 @@ class APIClient:
         """
         logger.debug("delete ip: sim=%s", sim_id)
         path = "commonserviceitem/%s/sim/ip" % sim_id
-        _ = self._request(method="delete", path=path)
+        self._request(method="delete", path=path)

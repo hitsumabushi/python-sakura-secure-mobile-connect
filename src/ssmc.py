@@ -179,8 +179,8 @@ class APIClient:
             logger.debug('request headers: %s', r.request.headers)
             logger.debug('request body: %s', r.request.body)
             logger.debug("response: %s" % r.text)
-        # PUT で 499 のときはなかったことにする
-        if (method == "put" or method == "delete") and r.status_code == 499:
+        # PUT で 409 のときはなかったことにする
+        if (method == "put" or method == "delete") and r.status_code == 409:
             return
         if r.status_code != requests.codes.ok:
             r.raise_for_status()

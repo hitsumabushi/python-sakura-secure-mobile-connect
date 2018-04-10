@@ -368,6 +368,29 @@ class APIClient:
         else:
             raise RuntimeError("Invalid response from cloud api.")
 
+    def update_sim(self, sim: SIM):
+        """
+        SIMの情報をアップデートする。ただし、アップデート可能なのは、
+
+        * Name
+        * Description
+        * Tags
+
+        :param sim: 与えられたSIMインスタンスの情報を元にアップデートされる
+        :return:
+        """
+        path = "commonserviceitem/" + sim.id
+        logger.debug("update sim: resource id=%s", sim.id)
+        payload = {
+            "CommonServiceItem": {
+                "Name": sim.name,
+                "Description": sim.description,
+                "Tags": sim.tags,
+            }
+        }
+        logger.debug("payload: %s", payload)
+        self._request(method="put", path=path)
+
     def delete_sim(self, sim_id: str):
         """
         指定されたSIMを登録解除する

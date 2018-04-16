@@ -349,7 +349,7 @@ class APIClient:
         path = "commonserviceitem"
         logger.debug("create sim: iccid=%s", iccid)
         name = iccid if name is None else name
-        description = json.dumps({"type_num": "dummy-test"}) if description is None else description
+        description = json.dumps({}) if description is None else description
         tags = ["test"] if tags is None else tags
         payload = {
             "CommonServiceItem": {

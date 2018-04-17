@@ -29,9 +29,9 @@ class SIM:
         self.name: str = args.get("Name", None)
         self.iccid: str = args["Status"]["ICCID"]
         self.description: dict = args["Description"]
-        self.tags: list(str) = args["Tags"]
-        self.created_at: str = args["CreatedAt"]
-        self.modified_at: str = args["ModifiedAt"]
+        self.tags: list(str) = args.get("Tags", {})
+        self.created_at: str = args.get("CreatedAt", "1970-01-01T00:00:00")
+        self.modified_at: str = args.get("ModifiedAt", "1970-01-01T00:00:00")
         self.availability = args["Availability"] if "Availability" in args else None
 
     def __repr__(self):

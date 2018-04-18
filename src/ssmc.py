@@ -392,7 +392,7 @@ class APIClient:
             }
         }
         logger.debug("payload: %s", payload)
-        self._request(method="put", path=path)
+        self._request(method="put", path=path, data=json.dumps(payload))
 
     def delete_sim(self, sim_id: str):
         """

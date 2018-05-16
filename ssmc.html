@@ -1,0 +1,627 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="ja" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ja" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ssmc module &mdash; ssmc  ドキュメント</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="prev" title="Welcome to src&#39;s documentation!" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ssmc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ssmc module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ssmc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>ssmc module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ssmc.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-ssmc">
+<span id="ssmc-module"></span><h1>ssmc module<a class="headerlink" href="#module-ssmc" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Library for Secure Mobile Connect of SAKURA Cloud.</p>
+<dl class="class">
+<dt id="ssmc.APIClient">
+<em class="property">class </em><code class="descclassname">ssmc.</code><code class="descname">APIClient</code><span class="sig-paren">(</span><em>token: str</em>, <em>secret: str</em>, <em>zone: str = 'tk1v'</em>, <em>debug: bool = False</em>, <em>base_url='https://secure.sakura.ad.jp/cloud'</em>, <em>common_service_item_master_zone='is1a'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>セキュアモバイルコネクトのためのAPIクライアントです。</p>
+<dl class="method">
+<dt id="ssmc.APIClient.activate_sim">
+<code class="descname">activate_sim</code><span class="sig-paren">(</span><em>sim_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.activate_sim"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.activate_sim" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMを有効化する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sim_id</strong> -- SIMのID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.assign_sim_to_mgw">
+<code class="descname">assign_sim_to_mgw</code><span class="sig-paren">(</span><em>mgw_id: str</em>, <em>sim_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.assign_sim_to_mgw"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.assign_sim_to_mgw" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMをMGWにアサインする
+:param mgw_id: MGWのID
+:param sim_id: SIMのID
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.create_sim">
+<code class="descname">create_sim</code><span class="sig-paren">(</span><em>iccid: str</em>, <em>passcode: str</em>, <em>name: Union[str</em>, <em>NoneType] = None</em>, <em>description: dict = None</em>, <em>tags: Iterable[str] = None</em><span class="sig-paren">)</span> &#x2192; ssmc.SIM<a class="reference internal" href="_modules/ssmc.html#APIClient.create_sim"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.create_sim" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMを登録する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>iccid</strong> -- ICCID</li>
+<li><strong>passcode</strong> -- 登録用パスコード</li>
+<li><strong>name</strong> -- 名前(セキュアモバイルコネクトでは、ICCIDで検索できないため、名前をICCIDにすることを強く推奨する)</li>
+<li><strong>description</strong> -- メモ欄に記載する内容を含んだdict</li>
+<li><strong>tags</strong> -- タグ</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">登録に成功していれば、SIMが返る</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.deactivate_sim">
+<code class="descname">deactivate_sim</code><span class="sig-paren">(</span><em>sim_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.deactivate_sim"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.deactivate_sim" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMを無効化する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sim_id</strong> -- SIMのID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.delete_ip">
+<code class="descname">delete_ip</code><span class="sig-paren">(</span><em>sim_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.delete_ip"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.delete_ip" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMに割り当てられるIPの設定を解除する</p>
+<ul class="simple">
+<li>このメソッドを呼ぶためには、SIMはMGWにアサインされている必要がある</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sim_id</strong> -- SIMのID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.delete_sim">
+<code class="descname">delete_sim</code><span class="sig-paren">(</span><em>sim_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.delete_sim"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.delete_sim" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定されたSIMを登録解除する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sim_id</strong> -- SIMのID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.get_sim_by_name">
+<code class="descname">get_sim_by_name</code><span class="sig-paren">(</span><em>name: str, filter={'Exclude': ['ServiceClass', 'SettingsHash', 'Icon', 'Provider'], 'Filter': {'Provider.Class': 'sim'}, 'Sort': ['ID']}, size=3000, offset=0</em><span class="sig-paren">)</span> &#x2192; Union[ssmc.SIM, NoneType]<a class="reference internal" href="_modules/ssmc.html#APIClient.get_sim_by_name"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.get_sim_by_name" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMを名前で完全一致で検索する&quot;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> -- 取得するSIMの名前</li>
+<li><strong>filter</strong> -- フィルター条件の指定</li>
+<li><strong>size</strong> -- 取得件数</li>
+<li><strong>offset</strong> -- オフセット</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">SIM or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.get_sim_status">
+<code class="descname">get_sim_status</code><span class="sig-paren">(</span><em>sim_id: str</em><span class="sig-paren">)</span> &#x2192; ssmc.SIMStatus<a class="reference internal" href="_modules/ssmc.html#APIClient.get_sim_status"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.get_sim_status" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定されたSIMのステータスを取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sim_id</strong> -- SIMのID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">SIMStatus</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.list_mgws">
+<code class="descname">list_mgws</code><span class="sig-paren">(</span><em>filter={'Exclude': ['ServiceClass', 'Settings', 'SettingsHash', 'Icon', 'Remark', 'Interfaces'], 'Filter': {'Class': 'mobilegateway'}, 'Sort': ['ID']}, size=3000, offset=0) -&gt; (typing.List[ssmc.MGW], &lt;class 'ssmc.PagingInfo'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.list_mgws"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.list_mgws" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>MGWの一覧を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>filter</strong> -- フィルター条件の指定</li>
+<li><strong>size</strong> -- 取得件数</li>
+<li><strong>offset</strong> -- オフセット</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">MGWのリスト, ページング情報</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.list_sim_statuses_of_mgw">
+<code class="descname">list_sim_statuses_of_mgw</code><span class="sig-paren">(</span><em>mgw_id: str, filter={'Sort': ['ID']}, size=3000, offset=0) -&gt; (typing.List[ssmc.SIMStatus], &lt;class 'ssmc.PagingInfo'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.list_sim_statuses_of_mgw"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.list_sim_statuses_of_mgw" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定されたMGWにアサインされているSIMのステータス一覧を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>mgw_id</strong> -- MGW のID</li>
+<li><strong>filter</strong> -- フィルター条件の指定</li>
+<li><strong>size</strong> -- 取得件数</li>
+<li><strong>offset</strong> -- オフセット</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">SIMのリスト, ページング情報</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.list_sims">
+<code class="descname">list_sims</code><span class="sig-paren">(</span><em>filter={'Exclude': ['ServiceClass', 'SettingsHash', 'Icon', 'Provider'], 'Filter': {'Provider.Class': 'sim'}, 'Sort': ['ID']}, size=3000, offset=0) -&gt; (typing.List[ssmc.SIM], &lt;class 'ssmc.PagingInfo'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.list_sims"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.list_sims" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>登録済みのSIM一覧を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>filter</strong> -- フィルター条件の指定</li>
+<li><strong>size</strong> -- 取得件数</li>
+<li><strong>offset</strong> -- オフセット</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">SIMのリスト, ページング情報</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.list_sims_of_mgw">
+<code class="descname">list_sims_of_mgw</code><span class="sig-paren">(</span><em>mgw_id: str, filter={'Sort': ['ID']}, size=3000, offset=0) -&gt; (typing.List[ssmc.SIMStatus], &lt;class 'ssmc.PagingInfo'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#ssmc.APIClient.list_sims_of_mgw" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定されたMGWにアサインされているSIMのステータス一覧を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>mgw_id</strong> -- MGW のID</li>
+<li><strong>filter</strong> -- フィルター条件の指定</li>
+<li><strong>size</strong> -- 取得件数</li>
+<li><strong>offset</strong> -- オフセット</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">SIMのリスト, ページング情報</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.lock_imei">
+<code class="descname">lock_imei</code><span class="sig-paren">(</span><em>sim_id: str</em>, <em>imei: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.lock_imei"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.lock_imei" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>IMEI Lock を設定する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>sim_id</strong> -- SIMのID</li>
+<li><strong>imei</strong> -- imei</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">sim_id</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.search_sims_by_name">
+<code class="descname">search_sims_by_name</code><span class="sig-paren">(</span><em>name: str, filter={'Exclude': ['ServiceClass', 'SettingsHash', 'Icon', 'Provider'], 'Filter': {'Provider.Class': 'sim'}, 'Sort': ['ID']}, size=3000, offset=0) -&gt; (typing.List[ssmc.SIM], &lt;class 'ssmc.PagingInfo'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.search_sims_by_name"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.search_sims_by_name" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMを名前で部分一致で検索する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> -- 中間一致で検索したい名前の文字列</li>
+<li><strong>filter</strong> -- フィルター条件の指定</li>
+<li><strong>size</strong> -- 取得件数</li>
+<li><strong>offset</strong> -- オフセット</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">SIMのリスト, ページング情報</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.set_ip">
+<code class="descname">set_ip</code><span class="sig-paren">(</span><em>sim_id: str</em>, <em>ip: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.set_ip"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.set_ip" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMに割り当てられるIPを設定する</p>
+<ul class="simple">
+<li>このメソッドを呼ぶためには、SIMはMGWにアサインされている必要がある</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>sim_id</strong> -- SIMのID</li>
+<li><strong>ip</strong> -- 割り当てるIPアドレス</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.unassign_sim_from_mgw">
+<code class="descname">unassign_sim_from_mgw</code><span class="sig-paren">(</span><em>mgw_id: str</em>, <em>sim_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.unassign_sim_from_mgw"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.unassign_sim_from_mgw" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>MGWからSIMを unassign する
+:param mgw_id: MGWのID
+:param sim_id: SIMのID
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.unlock_imei">
+<code class="descname">unlock_imei</code><span class="sig-paren">(</span><em>sim_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.unlock_imei"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.unlock_imei" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>IMEI を解除する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>sim_id</strong> -- SIMのID</li>
+<li><strong>imei</strong> -- imei</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first last">sim_id</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ssmc.APIClient.update_sim">
+<code class="descname">update_sim</code><span class="sig-paren">(</span><em>sim: ssmc.SIM</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#APIClient.update_sim"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.APIClient.update_sim" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>SIMの情報をアップデートする。ただし、アップデート可能なのは、</p>
+<ul class="simple">
+<li>Name</li>
+<li>Description</li>
+<li>Tags</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sim</strong> -- 与えられたSIMインスタンスの情報を元にアップデートされる</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ssmc.APIClient.url_format">
+<code class="descname">url_format</code><em class="property"> = '{base_url}/zone/{zone}/api/cloud/1.1/'</em><a class="headerlink" href="#ssmc.APIClient.url_format" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ssmc.MGW">
+<em class="property">class </em><code class="descclassname">ssmc.</code><code class="descname">MGW</code><span class="sig-paren">(</span><em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#MGW"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.MGW" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>MGWについてはこのライブラリでは中心的に扱っていないため、SIMをアサインするための最小限の情報のみ取得します</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ssmc.PagingInfo">
+<em class="property">class </em><code class="descclassname">ssmc.</code><code class="descname">PagingInfo</code><span class="sig-paren">(</span><em>total=None</em>, <em>size=None</em>, <em>offset=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#PagingInfo"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.PagingInfo" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ページングされた情報をハンドルするための共通クラスです。
+あるAPIについて、ページングされた内容をすべて取得したい場合には以下のようにして、PagingInfoをチェックすることで可能です。:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">paging</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">some_request</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">paging</span><span class="o">.</span><span class="n">total</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">paging</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">paging</span><span class="o">.</span><span class="n">offset</span>
+    <span class="k">if</span> <span class="n">offset</span> <span class="o">&gt;=</span> <span class="n">total</span><span class="p">:</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="ssmc.SIM">
+<em class="property">class </em><code class="descclassname">ssmc.</code><code class="descname">SIM</code><span class="sig-paren">(</span><em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#SIM"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.SIM" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>SIMクラスはSIMのリソースを表します。</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ssmc.SIMStatus">
+<em class="property">class </em><code class="descclassname">ssmc.</code><code class="descname">SIMStatus</code><span class="sig-paren">(</span><em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#SIMStatus"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.SIMStatus" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>SIMStatus はSIMの設定情報や通信状態といった、実行時に変化するものを扱います。</p>
+<dl class="method">
+<dt id="ssmc.SIMStatus.get_traffic_downlink">
+<code class="descname">get_traffic_downlink</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#SIMStatus.get_traffic_downlink"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.SIMStatus.get_traffic_downlink" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ssmc.SIMStatus.get_traffic_uplink">
+<code class="descname">get_traffic_uplink</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssmc.html#SIMStatus.get_traffic_uplink"><span class="viewcode-link">[ソース]</span></a><a class="headerlink" href="#ssmc.SIMStatus.get_traffic_uplink" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to src&#39;s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, hitsumabushi.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'ja',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

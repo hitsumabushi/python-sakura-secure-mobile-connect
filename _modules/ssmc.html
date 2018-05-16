@@ -1,0 +1,712 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="ja" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ja" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ssmc &mdash; ssmc  ドキュメント</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ssmc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ssmc.html">ssmc module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ssmc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">モジュールコード</a> &raquo;</li>
+        
+      <li>ssmc</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>ssmc のソースコード</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Library for Secure Mobile Connect of SAKURA Cloud.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">urljoin</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">requests.auth</span> <span class="k">import</span> <span class="n">HTTPBasicAuth</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">default_size</span> <span class="o">=</span> <span class="mi">3000</span>
+
+
+<div class="viewcode-block" id="SIM"><a class="viewcode-back" href="../ssmc.html#ssmc.SIM">[ドキュメント]</a><span class="k">class</span> <span class="nc">SIM</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SIMクラスはSIMのリソースを表します。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_filter</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Filter&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Provider.Class&quot;</span><span class="p">:</span> <span class="s2">&quot;sim&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;Sort&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;Exclude&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ServiceClass&quot;</span><span class="p">,</span> <span class="s2">&quot;SettingsHash&quot;</span><span class="p">,</span> <span class="s2">&quot;Icon&quot;</span><span class="p">,</span> <span class="s2">&quot;Provider&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iccid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">][</span><span class="s2">&quot;ICCID&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Tags&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CreatedAt&quot;</span><span class="p">,</span> <span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_at</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ModifiedAt&quot;</span><span class="p">,</span> <span class="s2">&quot;1970-01-01T00:00:00&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">availability</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;Availability&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;Availability&quot;</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+                <span class="s2">&quot;SIM: {ID: </span><span class="si">%s</span><span class="s2">, ICCID: </span><span class="si">%s</span><span class="s2">, Name: </span><span class="si">%s</span><span class="s2">, Description: </span><span class="si">%s</span><span class="s2">, Tags: </span><span class="si">%s</span><span class="s2">, CreatedAt: </span><span class="si">%s</span><span class="s2">}&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iccid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SIMStatus"><a class="viewcode-back" href="../ssmc.html#ssmc.SIMStatus">[ドキュメント]</a><span class="k">class</span> <span class="nc">SIMStatus</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SIMStatus はSIMの設定情報や通信状態といった、実行時に変化するものを扱います。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_filter</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Sort&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iccid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;iccid&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imsi</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;imsi&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session_status</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;session_status&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imei_lock</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;imei_lock&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;registered&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;activated&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_resource_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;resource_id&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;registered_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># list sim status のときは返ってきていない</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activated_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;activated_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deactivated_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deactivated_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traffic_bytes_of_current_month</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;traffic_bytes_of_current_month&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="c1"># exist if configured</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simgroup_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;simgroup_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imei</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;imei&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected_imei</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;connected_imei&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+                <span class="s2">&quot;SIMStuts: {sim_resource_id: </span><span class="si">%s</span><span class="s2">, session_status: </span><span class="si">%s</span><span class="s2">, simgroup_id: </span><span class="si">%s</span><span class="s2">}&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_resource_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_status</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">simgroup_id</span><span class="p">)</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="SIMStatus.get_traffic_uplink"><a class="viewcode-back" href="../ssmc.html#ssmc.SIMStatus.get_traffic_uplink">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_traffic_uplink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;uplink_bytes&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_bytes_of_current_month</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_bytes_of_current_month</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="SIMStatus.get_traffic_downlink"><a class="viewcode-back" href="../ssmc.html#ssmc.SIMStatus.get_traffic_downlink">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_traffic_downlink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;downlink_bytes&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_bytes_of_current_month</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">traffic_bytes_of_current_month</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span></div></div>
+
+
+<div class="viewcode-block" id="MGW"><a class="viewcode-back" href="../ssmc.html#ssmc.MGW">[ドキュメント]</a><span class="k">class</span> <span class="nc">MGW</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MGWについてはこのライブラリでは中心的に扱っていないため、SIMをアサインするための最小限の情報のみ取得します</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_filter</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Filter&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Class&quot;</span><span class="p">:</span> <span class="s2">&quot;mobilegateway&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;Sort&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;Exclude&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ServiceClass&quot;</span><span class="p">,</span> <span class="s2">&quot;Settings&quot;</span><span class="p">,</span> <span class="s2">&quot;SettingsHash&quot;</span><span class="p">,</span> <span class="s2">&quot;Icon&quot;</span><span class="p">,</span> <span class="s2">&quot;Remark&quot;</span><span class="p">,</span> <span class="s2">&quot;Interfaces&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;MGW: {ID: </span><span class="si">%s</span><span class="s2">, Name: </span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PagingInfo"><a class="viewcode-back" href="../ssmc.html#ssmc.PagingInfo">[ドキュメント]</a><span class="k">class</span> <span class="nc">PagingInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ページングされた情報をハンドルするための共通クラスです。</span>
+<span class="sd">    あるAPIについて、ページングされた内容をすべて取得したい場合には以下のようにして、PagingInfoをチェックすることで可能です。::</span>
+
+<span class="sd">        while True:</span>
+<span class="sd">            _, paging = api.some_request(size=size, offset=offset)</span>
+<span class="sd">            total = paging.total</span>
+<span class="sd">            offset = paging.size + paging.offset</span>
+<span class="sd">            if offset &gt;= total:</span>
+<span class="sd">                break</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ページング情報</span>
+
+<span class="sd">        :param total: 全体の件数</span>
+<span class="sd">        :param size: 今取得している件数</span>
+<span class="sd">        :param offset: オフセット</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">total</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;PagingInfo: {{total: </span><span class="si">{self.total}</span><span class="s2">, size: </span><span class="si">{self.size}</span><span class="s2">, offset: </span><span class="si">{self.offset}</span><span class="s2">}}&quot;</span></div>
+
+
+<div class="viewcode-block" id="APIClient"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient">[ドキュメント]</a><span class="k">class</span> <span class="nc">APIClient</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    セキュアモバイルコネクトのためのAPIクライアントです。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{base_url}</span><span class="s2">/zone/</span><span class="si">{zone}</span><span class="s2">/api/cloud/1.1/&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">zone</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tk1v&quot;</span><span class="p">,</span>
+                 <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://secure.sakura.ad.jp/cloud&quot;</span><span class="p">,</span>
+                 <span class="n">common_service_item_master_zone</span><span class="o">=</span><span class="s2">&quot;is1a&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        APIクライアント</span>
+
+<span class="sd">        :param token: APIキー</span>
+<span class="sd">        :param secret: APIシークレットキー</span>
+<span class="sd">        :param zone: MGWが存在するゾーン</span>
+<span class="sd">        :param debug: debug mode。request/response のログを見たい場合に利用</span>
+<span class="sd">        :param base_url: テストのためのオプション。APIエンドポイント</span>
+<span class="sd">        :param common_service_item_master_zone: テストのためのオプション。CommonServiceItemは特定のゾーンのAPIだけ早いので指定する</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="n">zone</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common_service_item_master_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="n">common_service_item_master_zone</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;request helper&quot;&quot;&quot;</span>
+        <span class="n">base_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_url</span>
+        <span class="c1"># TODO: commonserviceitem 系だけはmasterゾーンを叩かないと遅い</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/commonserviceitem&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;commonserviceitem&quot;</span><span class="p">):</span>
+            <span class="n">base_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_service_item_master_url</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                                <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">path</span><span class="p">),</span>
+                                <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;request url: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;request headers: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;request body: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;response: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="c1"># PUT で 409 のときはなかったことにする</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;put&quot;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;delete&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">409</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">status_success</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">status_ok</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_ok&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">status_ok</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">status_success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to run: method=</span><span class="si">%s</span><span class="s2">, path=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+<div class="viewcode-block" id="APIClient.list_mgws"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.list_mgws">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">list_mgws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">MGW</span><span class="o">.</span><span class="n">_filter</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">default_size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">MGW</span><span class="p">],</span> <span class="n">PagingInfo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        MGWの一覧を取得する</span>
+
+<span class="sd">        :param filter: フィルター条件の指定</span>
+<span class="sd">        :param size: 取得件数</span>
+<span class="sd">        :param offset: オフセット</span>
+<span class="sd">        :return: MGWのリスト, ページング情報</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;list mgws&quot;</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;appliance&quot;</span>
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;Count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">filter</span><span class="p">))</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s2">&quot;Appliances&quot;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&quot;Appliances&quot;</span><span class="p">]:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MGW</span><span class="p">(</span><span class="o">**</span><span class="n">m</span><span class="p">))</span>
+
+        <span class="n">paging</span> <span class="o">=</span> <span class="n">PagingInfo</span><span class="p">()</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;Total&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;Total&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;Count&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;Count&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="n">size</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;From&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="n">offset</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">paging</span></div>
+
+<div class="viewcode-block" id="APIClient.list_sims"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.list_sims">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">list_sims</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">SIM</span><span class="o">.</span><span class="n">_filter</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">default_size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">SIM</span><span class="p">],</span> <span class="n">PagingInfo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        登録済みのSIM一覧を取得する</span>
+
+<span class="sd">        :param filter: フィルター条件の指定</span>
+<span class="sd">        :param size: 取得件数</span>
+<span class="sd">        :param offset: オフセット</span>
+<span class="sd">        :return: SIMのリスト, ページング情報</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;list sims of ID&quot;</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem&quot;</span>
+        <span class="n">item_key</span> <span class="o">=</span> <span class="s2">&quot;CommonServiceItems&quot;</span>
+
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;Count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">filter</span><span class="p">))</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">item_key</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">[</span><span class="n">item_key</span><span class="p">]:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SIM</span><span class="p">(</span><span class="o">**</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="n">paging</span> <span class="o">=</span> <span class="n">PagingInfo</span><span class="p">()</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;Total&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;Total&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;Count&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;Count&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="n">size</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;From&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="n">offset</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">paging</span></div>
+
+<div class="viewcode-block" id="APIClient.search_sims_by_name"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.search_sims_by_name">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">search_sims_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">SIM</span><span class="o">.</span><span class="n">_filter</span><span class="p">,</span>
+                            <span class="n">size</span><span class="o">=</span><span class="n">default_size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">SIM</span><span class="p">],</span> <span class="n">PagingInfo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMを名前で部分一致で検索する</span>
+
+<span class="sd">        :param name: 中間一致で検索したい名前の文字列</span>
+<span class="sd">        :param filter: フィルター条件の指定</span>
+<span class="sd">        :param size: 取得件数</span>
+<span class="sd">        :param offset: オフセット</span>
+<span class="sd">        :return: SIMのリスト, ページング情報</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;search sims by name: </span><span class="si">{name}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;Filter&quot;</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_sims</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.get_sim_by_name"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.get_sim_by_name">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_sim_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">SIM</span><span class="o">.</span><span class="n">_filter</span><span class="p">,</span>
+                        <span class="n">size</span><span class="o">=</span><span class="n">default_size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SIM</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMを名前で完全一致で検索する&quot;</span>
+
+<span class="sd">        :param name: 取得するSIMの名前</span>
+<span class="sd">        :param filter: フィルター条件の指定</span>
+<span class="sd">        :param size: 取得件数</span>
+<span class="sd">        :param offset: オフセット</span>
+<span class="sd">        :return: SIM or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;get sim by name: </span><span class="si">{name}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;Filter&quot;</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">sims</span><span class="p">,</span> <span class="n">paging</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_sims</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sim</span> <span class="ow">in</span> <span class="n">sims</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">sim</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">paging</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">paging</span><span class="o">.</span><span class="n">offset</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">paging</span><span class="o">.</span><span class="n">total</span>
+            <span class="k">if</span> <span class="n">offset</span> <span class="o">&gt;=</span> <span class="n">total</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="APIClient.list_sim_statuses_of_mgw"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.list_sim_statuses_of_mgw">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">list_sim_statuses_of_mgw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mgw_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">SIMStatus</span><span class="o">.</span><span class="n">_filter</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">default_size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> \
+            <span class="o">-&gt;</span> <span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">SIMStatus</span><span class="p">],</span> <span class="n">PagingInfo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        指定されたMGWにアサインされているSIMのステータス一覧を取得する</span>
+
+<span class="sd">        :param mgw_id: MGW のID</span>
+<span class="sd">        :param filter: フィルター条件の指定</span>
+<span class="sd">        :param size: 取得件数</span>
+<span class="sd">        :param offset: オフセット</span>
+<span class="sd">        :return: SIMのリスト, ページング情報</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;list sim status: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mgw_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;appliance/</span><span class="si">{mgw_id}</span><span class="s2">/mobilegateway/sims&quot;</span>
+
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;Count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="nb">filter</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">filter</span><span class="p">))</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s2">&quot;sim&quot;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">]:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SIMStatus</span><span class="p">(</span><span class="o">**</span><span class="n">s</span><span class="p">))</span>
+        <span class="n">paging</span> <span class="o">=</span> <span class="n">PagingInfo</span><span class="p">()</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;Total&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;Total&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;Count&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;Count&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="n">size</span>
+        <span class="n">paging</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;From&quot;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="k">else</span> <span class="n">offset</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">paging</span></div>
+
+    <span class="n">list_sims_of_mgw</span> <span class="o">=</span> <span class="n">list_sim_statuses_of_mgw</span>
+
+<div class="viewcode-block" id="APIClient.get_sim_status"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.get_sim_status">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_sim_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SIMStatus</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        指定されたSIMのステータスを取得する</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :return: SIMStatus</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;get sim status: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/</span><span class="si">%s</span><span class="s2">/sim/status&quot;</span> <span class="o">%</span> <span class="n">sim_id</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;sim&quot;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">SIMStatus</span><span class="p">(</span><span class="o">**</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;sim&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid response from cloud api.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.create_sim"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.create_sim">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">create_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iccid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">passcode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                   <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                   <span class="n">tags</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SIM</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMを登録する</span>
+
+<span class="sd">        :param iccid: ICCID</span>
+<span class="sd">        :param passcode: 登録用パスコード</span>
+<span class="sd">        :param name: 名前(セキュアモバイルコネクトでは、ICCIDで検索できないため、名前をICCIDにすることを強く推奨する)</span>
+<span class="sd">        :param description: メモ欄に記載する内容を含んだdict</span>
+<span class="sd">        :param tags: タグ</span>
+<span class="sd">        :return: 登録に成功していれば、SIMが返る</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;create sim: iccid=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">iccid</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">iccid</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">name</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({})</span> <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">description</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tags</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CommonServiceItem&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+                <span class="s2">&quot;Tags&quot;</span><span class="p">:</span> <span class="n">tags</span><span class="p">,</span>
+                <span class="s2">&quot;Status&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;ICCID&quot;</span><span class="p">:</span> <span class="n">iccid</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;Remark&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;PassCode&quot;</span><span class="p">:</span> <span class="n">passcode</span><span class="p">},</span>
+                <span class="s2">&quot;Provider&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Class&quot;</span><span class="p">:</span> <span class="s2">&quot;sim&quot;</span><span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;payload: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s2">&quot;CommonServiceItem&quot;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">SIM</span><span class="p">(</span><span class="o">**</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;CommonServiceItem&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid response from cloud api.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.update_sim"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.update_sim">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">update_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="n">SIM</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMの情報をアップデートする。ただし、アップデート可能なのは、</span>
+
+<span class="sd">        * Name</span>
+<span class="sd">        * Description</span>
+<span class="sd">        * Tags</span>
+
+<span class="sd">        :param sim: 与えられたSIMインスタンスの情報を元にアップデートされる</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/&quot;</span> <span class="o">+</span> <span class="n">sim</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;update sim: resource id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CommonServiceItem&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                <span class="s2">&quot;Tags&quot;</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;payload: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="APIClient.delete_sim"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.delete_sim">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">delete_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        指定されたSIMを登録解除する</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;delete sim: resource id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/&quot;</span> <span class="o">+</span> <span class="n">sim_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.activate_sim"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.activate_sim">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">activate_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMを有効化する</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;activate sim: resource id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/&quot;</span> <span class="o">+</span> <span class="n">sim_id</span> <span class="o">+</span> <span class="s2">&quot;/sim/activate&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.deactivate_sim"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.deactivate_sim">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">deactivate_sim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMを無効化する</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;deactivate sim: resource id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/&quot;</span> <span class="o">+</span> <span class="n">sim_id</span> <span class="o">+</span> <span class="s2">&quot;/sim/deactivate&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.lock_imei"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.lock_imei">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">lock_imei</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">imei</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        IMEI Lock を設定する</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :param imei: imei</span>
+<span class="sd">        :return: sim_id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;lock imei: sim_id=</span><span class="si">%s</span><span class="s2">, imei=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sim_id</span><span class="p">,</span> <span class="n">imei</span><span class="p">))</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/</span><span class="si">%s</span><span class="s2">/sim/imeilock&quot;</span> <span class="o">%</span> <span class="n">sim_id</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sim&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;imei&quot;</span><span class="p">:</span> <span class="n">imei</span><span class="p">}}</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;payload: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="APIClient.unlock_imei"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.unlock_imei">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">unlock_imei</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        IMEI を解除する</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :param imei: imei</span>
+<span class="sd">        :return: sim_id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;unlock imei: sim_id=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sim_id</span><span class="p">,))</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/</span><span class="si">%s</span><span class="s2">/sim/imeilock&quot;</span> <span class="o">%</span> <span class="n">sim_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.assign_sim_to_mgw"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.assign_sim_to_mgw">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">assign_sim_to_mgw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mgw_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMをMGWにアサインする</span>
+<span class="sd">        :param mgw_id: MGWのID</span>
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;assign sim to mgw: sim=</span><span class="si">%s</span><span class="s2">, mgw=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mgw_id</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;appliance/</span><span class="si">%s</span><span class="s2">/mobilegateway/sims&quot;</span> <span class="o">%</span> <span class="n">mgw_id</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sim&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;resource_id&quot;</span><span class="p">:</span> <span class="n">sim_id</span><span class="p">}}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="APIClient.unassign_sim_from_mgw"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.unassign_sim_from_mgw">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">unassign_sim_from_mgw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mgw_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        MGWからSIMを unassign する</span>
+<span class="sd">        :param mgw_id: MGWのID</span>
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;unassign sim to mgw: sim=</span><span class="si">%s</span><span class="s2">, mgw=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mgw_id</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;appliance/</span><span class="si">%s</span><span class="s2">/mobilegateway/sims/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mgw_id</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="APIClient.set_ip"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.set_ip">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">set_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMに割り当てられるIPを設定する</span>
+
+<span class="sd">        * このメソッドを呼ぶためには、SIMはMGWにアサインされている必要がある</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :param ip: 割り当てるIPアドレス</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;set ip: sim=</span><span class="si">%s</span><span class="s2">, ip=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">,</span> <span class="n">ip</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/</span><span class="si">%s</span><span class="s2">/sim/ip&quot;</span> <span class="o">%</span> <span class="n">sim_id</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sim&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ip&quot;</span><span class="p">:</span> <span class="n">ip</span><span class="p">}}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="APIClient.delete_ip"><a class="viewcode-back" href="../ssmc.html#ssmc.APIClient.delete_ip">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">delete_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SIMに割り当てられるIPの設定を解除する</span>
+
+<span class="sd">        * このメソッドを呼ぶためには、SIMはMGWにアサインされている必要がある</span>
+
+<span class="sd">        :param sim_id: SIMのID</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;delete ip: sim=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;commonserviceitem/</span><span class="si">%s</span><span class="s2">/sim/ip&quot;</span> <span class="o">%</span> <span class="n">sim_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, hitsumabushi.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            LANGUAGE:'ja',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

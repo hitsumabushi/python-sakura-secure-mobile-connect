@@ -503,3 +503,46 @@ class APIClient:
         logger.debug("delete ip: sim=%s", sim_id)
         path = "commonserviceitem/%s/sim/ip" % sim_id
         self._request(method="delete", path=path)
+
+    def update_network_operator_config(self, sim_id: str, carriers: List[str]):
+        """
+        network_operator_config を利用して 接続するキャリアを設定する
+
+        https://manual.sakura.ad.jp/cloud/mobile-connect/api.html#api-sim-update-network-operator-config
+        param sim_id: SIM の ID
+        :return: ステータス（変更が許可されたかどうか
+        """
+
+        def build_payload(carriers: List[str]):
+            """
+            network_operator_config の payload を作る
+            デフォルトでソフトバンクのみは許可する
+            return
+            """
+            data = {
+                "network_operator_config": [
+                ]
+            }
+            for carrier in carriers:
+                data["network_operator_config"].append({
+                    "name": carrier,
+                    "allow": True
+                })
+            # 何も指定しない場合、とりあえず SoftBank のみ許可する
+            if len(data["network_operator_config"]) == 0:
+                data["network_operator_config"].append({
+                    "name": "SoftBank",
+                    "allow": True
+                })
+            logger.debug("request data...%s", data)
+            return data
+
+        logger.debug("allow carrier...")
+        path = "commonserviceitem/%s/sim/network_operator_config" % sim_id
+        payload = build_payload(carriers)
+        resp = self._request(method="put", path=path, data=json.dumps(payload))
+
+        if resp.status_code != requests.codes.ok:
+            resp.raise_for_status()
+        else:
+            return resp

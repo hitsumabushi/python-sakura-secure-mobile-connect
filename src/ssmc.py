@@ -537,7 +537,7 @@ class APIClient:
             logger.debug("request data...%s", data)
             return data
 
-        logger.debug("allow carrier...")
+        logger.debug("updating network operator...%s", carriers)
         path = "commonserviceitem/%s/sim/network_operator_config" % sim_id
         payload = build_payload(carriers)
         resp = self._request(method="put", path=path, data=json.dumps(payload))

@@ -546,3 +546,20 @@ class APIClient:
             resp.raise_for_status()
         else:
             return resp
+
+    def get_network_operator_config(self, sim_id: str):
+        """
+        network_operator_config を利用して 接続するキャリアを参照する
+
+        https://manual.sakura.ad.jp/cloud/mobile-connect/api.html#api-sim-get-network-operator-config
+        param sim_id: SIM の ID
+        :return: 許可されている
+        """
+        logger.debug("get network operator config")
+        path = "commonserviceitem/%s/sim/network_operator_config" % sim_id
+        resp = self._request(method="get", path=path)
+        if resp.status_code != requests.codes.ok:
+            resp.raise_for_status()
+        else:
+            logger.debug("response...%s", resp)
+            return resp
